@@ -68,4 +68,3 @@ echo '<br><br>';
 echo $p3->child('vendor/joomla')->setPrefix('D:/www');
 
 
-

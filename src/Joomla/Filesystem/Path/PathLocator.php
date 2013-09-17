@@ -10,16 +10,40 @@ namespace Joomla\Filesystem\Path;
 
 use Joomla\Filesystem\Path;
 
+/**
+ * A Path locator class
+ *
+ * @since  1.0
+ */
 class PathLocator implements \IteratorAggregate
 {
+    /**
+     * Path prefix
+     *
+     * @var string   
+     */
     protected $prefix = '';
     
+    /**
+     * A variable to store paths
+     *
+     * @var array 
+     */
     protected $paths = array();
     
+    /**
+     * Iterator cache
+     *
+     * @var \FilesystemIterator 
+     */
     protected $iterator = null;
     
     /**
-     * function __construct
+     * Constructor to handle path.
+     * 
+     * @param   string  $path  Path to parse.
+     *
+     * @since   1.0
      */
     public function __construct($path)
     {
@@ -30,7 +54,9 @@ class PathLocator implements \IteratorAggregate
     }
     
     /**
-     * function getIterator
+     * Get file iterator of current dir.
+     *
+     * @return  \FilesystemIterator  File & dir iterator.
      */
     public function getIterator()
     {
@@ -38,7 +64,9 @@ class PathLocator implements \IteratorAggregate
     }
     
     /**
-     * function getFolders
+     * Get folder iterator of current dir
+     *
+     * @return  \CallbackFilterIterator  Iterator only include dirs.
      */
     public function getFolders()
     {
@@ -49,7 +77,9 @@ class PathLocator implements \IteratorAggregate
     }
     
     /**
-     * function getFiles
+     * Get file iterator of current dir
+     *
+     * @return  \CallbackFilterIterator  Iterator only include files.
      */
     public function getFiles()
     {
@@ -60,7 +90,12 @@ class PathLocator implements \IteratorAggregate
     }
     
     /**
-     * function clean
+     * Clean path and remove dots.
+     * 
+     * @param   string   $path     A given path to parse.
+     * @param   boolean  $compact  If true, return imploded string, or return array.
+     *
+     * @return  string|array  Cleaned path.
      */
     protected function clean($path, $compact = false)
     {
@@ -93,7 +128,9 @@ class PathLocator implements \IteratorAggregate
     }
     
     /**
-     * function isDir
+     * Detect is current path a dir?
+     * 
+     * @return  boolean  True if is a dir.
      */
     public function isDir()
     {
@@ -101,7 +138,9 @@ class PathLocator implements \IteratorAggregate
     }
     
     /**
-     * function isFile
+     * Detect is current path a file?
+     * 
+     * @return  boolean  True if is a file.
      */
     public function isFile()
     {
@@ -109,7 +148,22 @@ class PathLocator implements \IteratorAggregate
     }
     
     /**
-     * function setPrefix
+     * Detect is current path exists?
+     * 
+     * @return  boolean  True if exists.
+     */
+    public function exists()
+    {
+        return file_exists((string) $this);
+    }
+    
+    /**
+     * Set a prefix, when this object convert to string,
+     * prefix will auto add to the front of path.
+     * 
+     * @param   string  $prefix  Prefix string to set.
+     *
+     * @return  PathLocator  Return this object to support chaining.
      */
     public function setPrefix($prefix = '')
     {
@@ -119,7 +173,11 @@ class PathLocator implements \IteratorAggregate
     }
     
     /**
-     * function child
+     * Get a child path of given name.
+     * 
+     * @param   string  $name  Child name.
+     *
+     * @return  PathLocator  Return this object to support chaining.
      */
     public function child($name)
     {
@@ -131,7 +189,11 @@ class PathLocator implements \IteratorAggregate
     }
     
     /**
-     * function parent
+     * Get a parent path of given condition.
+     * 
+     * @param   string  $name  Parent condition.
+     *
+     * @return  PathLocator  Return this object to support chaining.
      */
     public function parent($condition = null)
     {
@@ -176,7 +238,11 @@ class PathLocator implements \IteratorAggregate
     }
     
     /**
-     * function append
+     * Append a new path before current path.
+     * 
+     * @param   string  $path  Path to append.
+     *
+     * @return  PathLocator  Return this object to support chaining.
      */
     public function append($path)
     {
@@ -191,7 +257,9 @@ class PathLocator implements \IteratorAggregate
     }
     
     /**
-     * function __toString
+     * Convert this object to string.
+     *
+     * @return  string  Path name.
      */
     public function __toString()
     {
@@ -206,7 +274,11 @@ class PathLocator implements \IteratorAggregate
     }
     
     /**
-     * function extract
+     * Explode path by DIRECTORY_SEPARATOR.
+     * 
+     * @param   string  $path  Path to extract.
+     *
+     * @return  array  Extracted path array.
      */
     protected function extract($path)
     {
@@ -214,7 +286,11 @@ class PathLocator implements \IteratorAggregate
     }
     
     /**
-     * function compact
+     * Implode path by DIRECTORY_SEPARATOR.
+     * 
+     * @param   string  $path  Path to compact.
+     *
+     * @return  array  Compacted path array.
      */
     protected function compact($path)
     {
