@@ -48,9 +48,7 @@ class PathLocator implements \IteratorAggregate
     public function __construct($path)
     {
         // clean path
-        $path = $this->clean($path);
-        
-        $this->paths = $path;
+        $this->paths = $this->clean($path);
     }
     
     /**
