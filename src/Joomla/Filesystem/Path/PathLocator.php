@@ -12,6 +12,8 @@ use Joomla\Filesystem\Path;
 
 class PathLocator implements \IteratorAggregate
 {
+    protected $prefix = '';
+    
     protected $paths = array();
     
     protected $iterator = null;
@@ -30,9 +32,31 @@ class PathLocator implements \IteratorAggregate
     /**
      * function getIterator
      */
-    public  function getIterator()
+    public function getIterator()
     {
         return new \FilesystemIterator((string)$this);
+    }
+    
+    /**
+     * function getFolders
+     */
+    public function getFolders()
+    {
+        return new \CallbackFilterIterator($this->getIterator(), function($current, $key, $iterator)
+        {
+            return $iterator->isDir() && ! $iterator->isDot();
+        });
+    }
+    
+    /**
+     * function getFiles
+     */
+    public function getFiles()
+    {
+        return new \CallbackFilterIterator($this->getIterator(), function($current, $key, $iterator)
+        {
+            return $iterator->isFile() && ! $iterator->isDot();
+        });
     }
     
     /**
@@ -40,7 +64,7 @@ class PathLocator implements \IteratorAggregate
      */
     protected function clean($path, $compact = false)
     {
-        $path = trim($path, ' /\\');
+        $path = rtrim($path, ' /\\');
         
         $path = str_replace(array('/', '\\'), DIRECTORY_SEPARATOR ,$path);
         
@@ -66,6 +90,32 @@ class PathLocator implements \IteratorAggregate
         $path = array_values($path);
         
         return $compact ? $this->compact($path) : $path;
+    }
+    
+    /**
+     * function isDir
+     */
+    public function isDir()
+    {
+        return is_dir((string) $this);
+    }
+    
+    /**
+     * function isFile
+     */
+    public function isFile()
+    {
+        return is_file((string) $this);
+    }
+    
+    /**
+     * function setPrefix
+     */
+    public function setPrefix($prefix = '')
+    {
+        $this->prefix = $this->clean($prefix, true);
+        
+        return $this;
     }
     
     /**
@@ -141,6 +191,21 @@ class PathLocator implements \IteratorAggregate
     }
     
     /**
+     * function __toString
+     */
+    public function __toString()
+    {
+        $path = $this->compact($this->paths);
+        
+        if($this->prefix)
+        {
+            $path = rtrim($this->prefix, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . trim($path, DIRECTORY_SEPARATOR);
+        }
+        
+        return $path;
+    }
+    
+    /**
      * function extract
      */
     protected function extract($path)
@@ -154,13 +219,5 @@ class PathLocator implements \IteratorAggregate
     protected function compact($path)
     {
         return implode(DIRECTORY_SEPARATOR, $path);
-    }
-    
-    /**
-     * function __toString
-     */
-    public function __toString()
-    {
-        return $this->compact($this->paths);
     }
 }

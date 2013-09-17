@@ -39,9 +39,33 @@ echo '<br><br>';
 
 echo $p3->parent(2)->parent();
 
+echo '<br><br>';
 
+echo $p1->isDir() ? 'true' : 'false';
 
+echo '<br><br>';
 
+echo $p1->child('README.md')->isFile() ? 'true' : 'false';
+
+echo '<br><br>';
+
+$dirs = $p1->parent()->getFolders();
+
+foreach( $dirs as $dir ):
+    echo $dir . '<br>';
+endforeach;
+
+echo '<br><br>';
+
+$dirs = $p1->getFiles();
+
+foreach( $dirs as $dir ):
+    echo $dir . '<br>';
+endforeach;
+
+echo '<br><br>';
+
+echo $p3->child('vendor/joomla')->setPrefix('D:/www');
 
 
 
