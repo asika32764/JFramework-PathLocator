@@ -1,0 +1,9 @@
+{
+    "require": {
+        "joomla/filesystem": "dev-master"
+    },
+    "autoload": {
+        "psr-0": { "": "src/" }
+    },
+    "minimum-stability": "dev"
+}
