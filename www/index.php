@@ -67,4 +67,14 @@ echo '<br><br>';
 
 echo $p3->child('vendor/joomla')->setPrefix('D:/www');
 
+echo '<br><br>';
+
+echo $p4 = new PathLocator('../../joomla');
+
+echo '<br><br>';
+
+echo $p4->child('administrator/com_content')->child('../com_finder');
+
+
+
 

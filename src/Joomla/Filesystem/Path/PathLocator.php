@@ -18,6 +18,24 @@ use Joomla\Filesystem\Path;
 class PathLocator implements \IteratorAggregate
 {
 	/**
+	 * Set return type is string.
+	 *
+	 * @var int
+	 *
+	 * @since 1.0
+	 */
+	const RETURN_AS_STRING = 1;
+	
+	/**
+	 * Set return type is array.
+	 *
+	 * @var int
+	 *
+	 * @since 1.0
+	 */
+	const RETURN_AS_ARRAY = 0;
+	
+	/**
 	 * Path prefix
 	 *
 	 * @var string   
@@ -48,7 +66,7 @@ class PathLocator implements \IteratorAggregate
 	public function __construct($path)
 	{
 		// clean path
-		$this->paths = $this->clean($path);
+		$this->paths = $this->regularize($path);
 	}
 	
 	/**
@@ -88,21 +106,70 @@ class PathLocator implements \IteratorAggregate
 	}
 	
 	/**
+	 * Regularize path, remove not necessary elements. 
+	 *
+	 * @param  string  $path          A given path to regularize.
+	 * @param  string  $returnString  Return string or array.
+	 *
+	 * @return  string|array  Regularized path.
+	 *
+	 * @since  1.0
+	 */
+	public function regularize($path, $returnString = 0)
+	{
+		// Clean the Directory separator 
+		$path = $this->clean($path);
+		
+		// Extract to array
+		$path = $this->extract($path);
+		
+		// Remove dots from path
+		$path = $this->removeDots($path);
+		
+		// If set to return string, compact it.
+		if($returnString == self::RETURN_AS_STRING)
+		{
+			$path = $thsi->compact($path);
+		}
+		
+		return $path;
+	}
+	
+	/**
 	 * Clean path and remove dots.
 	 * 
 	 * @param   string   $path     A given path to parse.
-	 * @param   boolean  $compact  If true, return imploded string, or return array.
 	 *
-	 * @return  string|array  Cleaned path.
+	 * @return  string  Cleaned path.
 	 */
-	protected function clean($path, $compact = false)
+	protected function clean($path)
 	{
 		$path = rtrim($path, ' /\\');
 		
 		$path = str_replace(array('/', '\\'), DIRECTORY_SEPARATOR ,$path);
 		
-		$path = $this->extract($path);
+		return $path;
+	}
+	
+	/**
+	 * Remove dots from path.
+	 *
+	 * @param  string|array  $path  A given path to remove dots.
+	 *
+	 * @return  string|array  Cleaned path.
+	 *
+	 * @since  1.0
+	 */
+	public function removeDots($path)
+	{
+		$isBeginning = true ;
 		
+		// If not array, extract it.
+		$isArray = is_array($path);
+		
+		$path = $isArray ? $path : $this->extract($path);
+		
+		// Search for dot files
 		foreach($path as $key => $row)
 		{
 			// Remove dot files
@@ -111,18 +178,24 @@ class PathLocator implements \IteratorAggregate
 				unset($path[$key]);
 			}
 			
-			// Remove .. and parent dir
-			if($row == '..')
+			// Remove dots and go parent dir
+			if($row == '..' && !$isBeginning)
 			{
 				unset($path[$key]);
 				unset($path[$key - 1]);
+			}
+			
+			// Do not get parent if dots in the beginning
+			if($row != '..' && $isBeginning)
+			{
+				$isBeginning = false;
 			}
 		}
 		
 		// Re index array
 		$path = array_values($path);
 		
-		return $compact ? $this->compact($path) : $path;
+		return $isArray ? $path : $this->compact($path);
 	}
 	
 	/**
@@ -165,7 +238,7 @@ class PathLocator implements \IteratorAggregate
 	 */
 	public function setPrefix($prefix = '')
 	{
-		$this->prefix = $this->clean($prefix, true);
+		$prefix = $this->regularize($prefix);
 		
 		return $this;
 	}
@@ -179,7 +252,7 @@ class PathLocator implements \IteratorAggregate
 	 */
 	public function child($name)
 	{
-		$path = $this->clean($name);
+		$path = $this->regularize($name);
 		
 		$this->append($path);
 		
@@ -246,10 +319,12 @@ class PathLocator implements \IteratorAggregate
 	{
 		if(!is_array($path))
 		{
-			$path = $this->clean();
+			$path = $this->regularize();
 		}
 		
-		$this->paths = array_merge($this->paths, $path);
+		$path = array_merge($this->paths, $path);
+		
+		$this->paths = $this->removeDots($path);
 		
 		return $this;
 	}
@@ -267,6 +342,8 @@ class PathLocator implements \IteratorAggregate
 		{
 			$path = rtrim($this->prefix, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . trim($path, DIRECTORY_SEPARATOR);
 		}
+		
+		$path = $this->removeDots($path);
 		
 		return $path;
 	}
