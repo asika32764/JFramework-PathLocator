@@ -36,15 +36,6 @@ class PathLocator implements \IteratorAggregate
 	protected $paths = array();
 	
 	/**
-	 * Iterator cache
-	 *
-	 * @var array
-	 *
-	 * @since  1.0
-	 */
-	protected $iterator = array();
-	
-	/**
 	 * Constructor to handle path.
 	 * 
 	 * @param   string  $path  Path to parse.
@@ -53,8 +44,23 @@ class PathLocator implements \IteratorAggregate
 	 */
 	public function __construct($path)
 	{
-		// clean path
 		$this->paths = $this->regularize($path);
+	}
+	
+	/**
+	 * Replace with a new path.
+	 *
+	 * @param   string  $path  Path to parse.
+	 *
+	 * @return  PathLocator  Return this object to support chaining.
+	 *
+	 * @since  1.0
+	 */
+	public function redirect($path)
+	{
+		$this->paths = $this->regularize($path);
+		
+		return $this;
 	}
 	
 	/**
@@ -66,17 +72,22 @@ class PathLocator implements \IteratorAggregate
 	 */
 	public function getIterator($recursive = false)
 	{
-		if(!empty($this->iterator[(string) $this]))
+		return $this->findByCallback(function($current, $key, $iterator)
 		{
-			$iterator = $this->iterator[(string) $this];
-		}
-		else
-		{
-			// Remove previous iterator cache
-			$this->iterator = array();
-			
-			$iterator = $this->iterator[(string) $this] = new \RecursiveDirectoryIterator((string)$this);
-		}
+			return !$iterator->isDot();
+		}, $recursive);
+	}
+	
+	/**
+	 * Create file iterator of current dir.
+	 *
+	 * @param  boolean  $recursive  True to resursive.
+	 *
+	 * @return  \FilesystemIterator|\RecursiveIteratorIterator  File & dir iterator.
+	 */
+	public function createIterator($recursive = false)
+	{
+		$iterator = new \RecursiveDirectoryIterator((string)$this);
 		
 		// If rescurive set to true, use RecursiveIteratorIterator
 		return $recursive ? new \RecursiveIteratorIterator($iterator) : $iterator;
@@ -184,7 +195,7 @@ class PathLocator implements \IteratorAggregate
 	 */
 	public function findByCallback(\Closure $callback, $recursive = false)
 	{
-		return new \CallbackFilterIterator($this->getIterator($recursive), $callback);
+		return new \CallbackFilterIterator($this->createIterator($recursive), $callback);
 	}
 	
 	/**

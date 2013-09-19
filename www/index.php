@@ -21,6 +21,8 @@ use Joomla\Filesystem\Path\PathCollection;
 
 
 // Start class test
+echo '<h3>Set some paths in PathLocator</h3>';
+
 echo $p1 = new PathLocator('D:/www/repo/../repo\path\\');
 
 echo '<br><br>';
@@ -77,12 +79,16 @@ echo $p4->child('administrator/com_content')->child('../com_finder');
 
 echo '<br><br>';
 
-$dirs = $p1->child('src/Joomla')->getFolders(true);
-echo $p1;
-show($dirs);
-//$dirs = new RecursiveIteratorIterator(new \RecursiveDirectoryIterator((string) $p1->parent('path')),  RecursiveIteratorIterator::SELF_FIRST);
+$dirs = $p1->child('src/Joomla')->getFolders();
 
 foreach( $dirs as $dir ):
+    echo $dir . '<br>';
+endforeach;
+
+echo '<br><br>';
+
+// Show all files
+foreach( new PathLocator('D:/www/repo/path') as $dir ):
     echo $dir . '<br>';
 endforeach;
 
