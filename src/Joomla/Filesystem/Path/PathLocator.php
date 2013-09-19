@@ -9,6 +9,7 @@
 namespace Joomla\Filesystem\Path;
 
 use Joomla\Filesystem\Path;
+use Joomla\Filesystem\Comparator\FileComparatorInterface;
 
 /**
  * A Path locator class
@@ -72,6 +73,7 @@ class PathLocator implements \IteratorAggregate
 	 */
 	public function getIterator($recursive = false)
 	{
+		// If we put this object into a foreach, return all files and folders to iterator.
 		return $this->findByCallback(function($current, $key, $iterator)
 		{
 			return !$iterator->isDot();
@@ -97,7 +99,7 @@ class PathLocator implements \IteratorAggregate
 	 * Get folder iterator of current dir
 	 *
 	 * Note: Caurse of \RecursiveDirectoryIterator behavior,
-	 * if $recursive set to TRUE, every rturned folders name will include a dot (.)
+	 * if $recursive set to TRUE, every rturned folder name will include a dot (.)
 	 * after path.
 	 *
 	 * @param  boolean  $recursive  True to resursive.
@@ -110,7 +112,8 @@ class PathLocator implements \IteratorAggregate
 		{
 			if($recursive)
 			{
-				// If set to recursive, we can't using isDot() to detect folder.
+				// If set to recursive, every rturned folder name will include a dot (.),
+				// so we can't using isDot() to detect folder.
 				return $iterator->isDir() && ($current->getBasename() == '..') ;
 			}
 			else
@@ -138,7 +141,7 @@ class PathLocator implements \IteratorAggregate
 	/**
 	 * Find one file and return.
 	 *
-	 * @param  string  $condition  A string or regex to find file.
+	 * @param  mixed    $condition  A string or regex to find file.
 	 * @param  boolean  $recursive  True to resursive.
 	 *
 	 * @return  \SplFileInfo  Finded file info object.
@@ -147,13 +150,17 @@ class PathLocator implements \IteratorAggregate
 	 */
 	public function find($condition, $recursive = false)
 	{
-		return new \LimitIterator($this->findAll($condition, $recursive), 0, 1);
+		$iterator = new \LimitIterator($this->findAll($condition, $recursive), 0, 1);
+		
+		$iterator->rewind();
+		
+		return $iterator->current();
 	}
 	
 	/**
 	 * Find all files which matches condition.
 	 *
-	 * @param  string   $condition  A string or regex to find file.
+	 * @param  mixed    $condition  A string or regex to find file.
 	 * @param  boolean  $recursive  True to resursive.
 	 *
 	 * @return  \CallbackFilterIterator  Finded files or paths iterator.
@@ -162,20 +169,29 @@ class PathLocator implements \IteratorAggregate
 	 */
 	public function findAll($condition, $recursive = false)
 	{
-		if(!($condition instanceof \Closure))
+		if(!($condition instanceof \Closure) && !($condition instanceof FileComparatorInterface))
 		{
 			if(is_array($condition))
 			{
 				$condition = '/(' . implode('|', $condition) . ')/';
 			}
 			else{
-				$condition = (string) $condition;
+				$condition = '/' . (string) $condition . '/';
 			}
 			
+			// Create callback
 			$condition = function($current, $key, $iterator) use ($condition)
 			{
 				return @preg_match($condition, $iterator->getFilename())  && ! $iterator->isDot();
-			};
+			}; // callback end
+		}
+		elseif($condition instanceof FileComparatorInterface)
+		{
+			// Create callback
+			$condition = function($current, $key, $iterator) use ($condition)
+			{
+				return $condition->compare($current, $key, $iterator);
+			}; // callback end
 		}
 		
 		return $this->findByCallback($condition, $recursive);
