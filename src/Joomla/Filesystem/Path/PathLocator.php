@@ -18,24 +18,6 @@ use Joomla\Filesystem\Path;
 class PathLocator implements \IteratorAggregate
 {
 	/**
-	 * Set return type is string.
-	 *
-	 * @var int
-	 *
-	 * @since 1.0
-	 */
-	const RETURN_AS_STRING = 1;
-	
-	/**
-	 * Set return type is array.
-	 *
-	 * @var int
-	 *
-	 * @since 1.0
-	 */
-	const RETURN_AS_ARRAY = 0;
-	
-	/**
 	 * Path prefix
 	 *
 	 * @var string   
@@ -52,9 +34,9 @@ class PathLocator implements \IteratorAggregate
 	/**
 	 * Iterator cache
 	 *
-	 * @var \FilesystemIterator 
+	 * @var array
 	 */
-	protected $iterator = null;
+	protected $iterator = array();
 	
 	/**
 	 * Constructor to handle path.
@@ -74,9 +56,22 @@ class PathLocator implements \IteratorAggregate
 	 *
 	 * @return  \FilesystemIterator  File & dir iterator.
 	 */
-	public function getIterator()
+	public function getIterator($recursive = false)
 	{
-		return new \FilesystemIterator((string)$this);
+		if(!empty($this->iterator[(string) $this]))
+		{
+			$iterator = $this->iterator[(string) $this];
+		}
+		else
+		{
+			// Remove previous iterator cache
+			$this->iterator = array();
+			
+			$iterator = $this->iterator[(string) $this] = new \RecursiveDirectoryIterator((string)$this);
+		}
+		
+		// If rescurive set to true, use RecursiveIteratorIterator
+		return $recursive ? new \RecursiveIteratorIterator($iterator) : $iterator;
 	}
 	
 	/**
@@ -84,12 +79,23 @@ class PathLocator implements \IteratorAggregate
 	 *
 	 * @return  \CallbackFilterIterator  Iterator only include dirs.
 	 */
-	public function getFolders()
+	public function getFolders($recursive = false)
 	{
-		return $this->findByCallback(function($current, $key, $iterator)
+		return $this->findByCallback(function($current, $key, $iterator) use ($recursive)
 		{
-			return $iterator->isDir() && ! $iterator->isDot();
-		});
+			if($recursive)
+			{
+				$baseame = $current->getBasename();
+			
+				if($baseame == '..') return false;
+				
+				return $iterator->isDir();
+			}
+			else
+			{
+				return $iterator->isDir() && ! $iterator->isDot();
+			}
+		}, $recursive);
 	}
 	
 	/**
@@ -97,12 +103,12 @@ class PathLocator implements \IteratorAggregate
 	 *
 	 * @return  \CallbackFilterIterator  Iterator only include files.
 	 */
-	public function getFiles()
+	public function getFiles($recursive = false)
 	{
 		return $this->findByCallback(function($current, $key, $iterator)
 		{
 			return $iterator->isFile() && ! $iterator->isDot();
-		});
+		}, $recursive);
 	}
 	
 	/**
@@ -110,27 +116,44 @@ class PathLocator implements \IteratorAggregate
 	 *
 	 * @param  string
 	 * @param  string
-	 * @param  string
 	 *
 	 * @return  string  findReturn
 	 *
 	 * @since  1.0
 	 */
-	public function find($condition)
+	public function find($condition, $recursive = false)
+	{
+		return new \LimitIterator($this->findAll($condition, $recursive), 0, 1);
+	}
+	
+	/**
+	 * finAll description
+	 *
+	 * @param  string
+	 *
+	 * @return  string  finAllReturn
+	 *
+	 * @since  1.0
+	 */
+	public function findAll($condition, $recursive = false)
 	{
 		if(!($condition instanceof \Closure))
 		{
-			$condition = (array) $condition;
-			
-			$condition = '/(' . implode('|', $condition) . ')/';
+			if(is_array($condition))
+			{
+				$condition = '/(' . implode('|', $condition) . ')/';
+			}
+			else{
+				$condition = (string) $condition;
+			}
 			
 			$condition = function($current, $key, $iterator) use ($condition)
 			{
-				return preg_match($condition, $iterator->getFilename())  && ! $iterator->isDot();
+				return @preg_match($condition, $iterator->getFilename())  && ! $iterator->isDot();
 			};
 		}
 		
-		return $this->findByCallback($condition);
+		return $this->findByCallback($condition, $recursive);
 	}
 	
 	/**
@@ -144,9 +167,9 @@ class PathLocator implements \IteratorAggregate
 	 *
 	 * @since  1.0
 	 */
-	protected function findByCallback(\Closure $callback)
+	protected function findByCallback(\Closure $callback, $recursive = false)
 	{
-		return new \CallbackFilterIterator($this->getIterator(), $callback);
+		return new \CallbackFilterIterator($this->getIterator($recursive), $callback);
 	}
 	
 	/**
@@ -159,7 +182,7 @@ class PathLocator implements \IteratorAggregate
 	 *
 	 * @since  1.0
 	 */
-	public function regularize($path, $returnString = 0)
+	public function regularize($path, $returnString = false)
 	{
 		// Clean the Directory separator 
 		$path = $this->clean($path);
@@ -171,7 +194,7 @@ class PathLocator implements \IteratorAggregate
 		$path = $this->removeDots($path);
 		
 		// If set to return string, compact it.
-		if($returnString == self::RETURN_AS_STRING)
+		if($returnString == true)
 		{
 			$path = $thsi->compact($path);
 		}

@@ -77,7 +77,10 @@ echo $p4->child('administrator/com_content')->child('../com_finder');
 
 echo '<br><br>';
 
-$dirs = $p1->child('src/Joomla/Filesystem/Path')->find('');
+$dirs = $p1->child('src/Joomla')->getFolders(true);
+echo $p1;
+show($dirs);
+//$dirs = new RecursiveIteratorIterator(new \RecursiveDirectoryIterator((string) $p1->parent('path')),  RecursiveIteratorIterator::SELF_FIRST);
 
 foreach( $dirs as $dir ):
     echo $dir . '<br>';
