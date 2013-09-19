@@ -75,6 +75,12 @@ echo '<br><br>';
 
 echo $p4->child('administrator/com_content')->child('../com_finder');
 
+echo '<br><br>';
 
+$dirs = $p1->child('src/Joomla/Filesystem/Path')->find('');
+
+foreach( $dirs as $dir ):
+    echo $dir . '<br>';
+endforeach;
 
 

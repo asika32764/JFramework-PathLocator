@@ -86,7 +86,7 @@ class PathLocator implements \IteratorAggregate
 	 */
 	public function getFolders()
 	{
-		return new \CallbackFilterIterator($this->getIterator(), function($current, $key, $iterator)
+		return $this->findByCallback(function($current, $key, $iterator)
 		{
 			return $iterator->isDir() && ! $iterator->isDot();
 		});
@@ -99,10 +99,54 @@ class PathLocator implements \IteratorAggregate
 	 */
 	public function getFiles()
 	{
-		return new \CallbackFilterIterator($this->getIterator(), function($current, $key, $iterator)
+		return $this->findByCallback(function($current, $key, $iterator)
 		{
 			return $iterator->isFile() && ! $iterator->isDot();
 		});
+	}
+	
+	/**
+	 * find description
+	 *
+	 * @param  string
+	 * @param  string
+	 * @param  string
+	 *
+	 * @return  string  findReturn
+	 *
+	 * @since  1.0
+	 */
+	public function find($condition)
+	{
+		if(!($condition instanceof \Closure))
+		{
+			$condition = (array) $condition;
+			
+			$condition = '/(' . implode('|', $condition) . ')/';
+			
+			$condition = function($current, $key, $iterator) use ($condition)
+			{
+				return preg_match($condition, $iterator->getFilename())  && ! $iterator->isDot();
+			};
+		}
+		
+		return $this->findByCallback($condition);
+	}
+	
+	/**
+	 * findByCallback description
+	 *
+	 * @param  string
+	 * @param  string
+	 * @param  string
+	 *
+	 * @return  string  findByCallbackReturn
+	 *
+	 * @since  1.0
+	 */
+	protected function findByCallback(\Closure $callback)
+	{
+		return new \CallbackFilterIterator($this->getIterator(), $callback);
 	}
 	
 	/**
