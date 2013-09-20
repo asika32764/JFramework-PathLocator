@@ -306,7 +306,14 @@ class PathCollection implements \IteratorAggregate
      */
     public function toArray()
     {
-        return $this->paths;
+        $array = array();
+        
+        foreach($this->paths as $path)
+        {
+            $array[] = (string) clone $path;
+        }
+        
+        return $array;
     }
     
     /**
@@ -358,9 +365,14 @@ class PathCollection implements \IteratorAggregate
      *
      * @since  1.0
      */
-    public function appendAll()
+    public function appendAll($appended)
     {
+        foreach($this->paths as &$path)
+        {
+            $path->append($appended);
+        }
         
+        return $this;
     }
     
     /**
@@ -374,9 +386,10 @@ class PathCollection implements \IteratorAggregate
      *
      * @since  1.0
      */
-    public function prependAll()
+    public function prependAll($prepends)
     {
         
+        return $this;
     }
     
     /**
@@ -392,9 +405,9 @@ class PathCollection implements \IteratorAggregate
      */
     public function isSubdir($path)
     {
-        foreach($this->paths as $val)
+        foreach($this->paths as $member)
         {
-            if($val->isSubdirOf($path))
+            if($member->isSubdirOf($path))
             {
                 return true;
             }

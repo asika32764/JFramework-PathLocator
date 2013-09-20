@@ -57,3 +57,5 @@ foreach($pc->getFolders(true) as $pl)
 {
     echo $pl . '<br>';
 }
+
+show($pc->toArray());
