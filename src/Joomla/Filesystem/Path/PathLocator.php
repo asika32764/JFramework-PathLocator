@@ -105,11 +105,7 @@ class PathLocator implements PathLocatorInterface, \IteratorAggregate
 	}
 	
 	/**
-	 * Get folder iterator of current dir
-	 *
-	 * Note: Caurse of \RecursiveDirectoryIterator behavior,
-	 * if $recursive set to TRUE, every rturned folder name will include a dot (.)
-	 * after path.
+	 * Get folder iterator of current dir.
 	 *
 	 * @param  boolean  $recursive  True to resursive.
 	 *
@@ -480,13 +476,11 @@ class PathLocator implements PathLocatorInterface, \IteratorAggregate
 	}
 	
 	/**
-	 * isSubdir description
+	 * Is this path subdir of given path?
 	 *
-	 * @param  string
-	 * @param  string
-	 * @param  string
+	 * @param  string  $parent  Given path to detect.
 	 *
-	 * @return  string  isSubdirReturn
+	 * @return  boolean  Is subdir or not.
 	 *
 	 * @since  1.0
 	 */
