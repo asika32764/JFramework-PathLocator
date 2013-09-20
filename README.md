@@ -125,6 +125,19 @@ foreach($path->findAll($callback, true) as $file)
 }
 ```
 
+Find by Comparator
+
+This comparator object may contain the filter logic, but not prepared yet.
+
+``` php
+$comparator = new FileComparaotr;
+
+foreach($path->findAll(FileComparatorInterface $comparator, true) as $file)
+{
+    // ...
+}
+```
+
 
 #### Strict Mode
 
@@ -154,7 +167,7 @@ The iterator will travel to every `PathLocator` in this collection object, and r
 new $paths = new PathColleciotn(array(
     new PathLocator('templates/' . $template . '/html/' . $option),
     new PathLocator('components/' . $option . '/view/tmpl/'),
-    new PathLocator('layouts/' . $option)
+    'layouts/' . $option ,     // Auto convert to PathLocator 
 ));
 ```
 
