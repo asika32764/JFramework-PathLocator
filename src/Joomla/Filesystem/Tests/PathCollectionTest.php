@@ -1,81 +1,123 @@
 <?php
 /**
- * Part of the Joomla Framework Filesystem Package
- *
- * @copyright  Copyright (C) 2005 - 2013 Open Source Matters, Inc. All rights reserved.
+ * @copyright  Copyright (C) 2005 - 2011 Open Source Matters, Inc. All rights reserved.
  * @license    GNU General Public License version 2 or later; see LICENSE
  */
 
-namespace Joomla\Filesystem\Path;
-
 use Joomla\Filesystem\Path;
 use Joomla\Filesystem\Path\PathLocator;
-use Joomla\Filesystem\Path\PathLocatorInterface;
+use Joomla\Filesystem\Path\PathCollection;
 
 /**
- * A PathLocator collection class
+ * Tests for the PathCollection class.
  *
  * @since  1.0
  */
-class PathCollection implements \IteratorAggregate
+class PathCollectionTest extends PHPUnit_Framework_TestCase
 {
-    protected $paths = array();
+    public $collection;
     
     /**
-     * __construct description
+     * setUp description
      *
      * @param  string
      * @param  string
      * @param  string
      *
-     * @return  string  __constructReturn
+     * @return  string  setUpReturn
      *
      * @since  1.0
      */
-    public function __construct($paths = array())
+    public function setUp()
     {
-        $this->addPaths($paths);
+        $this->collection = new PathCollection();
     }
     
     /**
-     * addPaths description
+	 * Data provider for testClean() method.
+	 *
+	 * @return  array
+	 *
+	 * @since   1.0
+	 */
+	public function getPathData()
+	{
+		return array(
+			// Input Path, Directory Separator, Expected Output
+			'one path' => array(
+				'/var/www/foo/bar',
+				array(new PathLocator('/var/www/foo/bar'))
+			),
+			
+            'paths with on key' => array(
+				array(
+					'/',
+					'/var/www/foo/bar',
+					'/var/www/joomla/bar/foo'
+				),
+				array(
+					new PathLocator('/'),
+					new PathLocator('/var/www/foo/bar'),
+					new PathLocator('/var/www/joomla/bar/foo')
+				)
+			),
+			
+            'paths with key' => array(
+				array(
+					'root' => '/',
+					'foo' => '/var/www/foo'
+				),
+				array(
+					'root' => new PathLocator('/'),
+					'foo' => new PathLocator('/var/www/foo')
+				)
+			)
+		);
+	}
+    
+    /**
+     * test__construct description
      *
      * @param  string
      * @param  string
      * @param  string
      *
-     * @return  string  addPathsReturn
+     * @return  string  test__constructReturn
      *
      * @since  1.0
      */
-    public function addPaths($paths)
+    public function test__construct()
     {
-        $paths = is_array($paths) ? $paths : array($paths);
+        $collections = new PathCollection('/var/www/foo/bar');
         
-        foreach($paths as $key => $path)
-        {
-            // If path element is subclass of PathLocatorInterface, just put it in path bag.
-            // You can create any your Path locator class implements from PathLocatorInterface.
-            if($path instanceof PathLocatorInterface)
-            {
-                $this->paths[$key] = $path;
-            }
-            // If this element is a path string, we create a PathLocator to wrap it.
-            elseif(is_string($path) || !$path)
-            {
-                $this->paths[$key] = new PathLocator($path);
-            }
-            // If type of this element not match our interface, throw exception.
-            else
-            {
-                throw new \InvalidArgumentException('PathCollection needed every path element instance of PathLocatorInterface.');
-            }
-        }
-        
-        return $this;
+        $paths = $collections->getPaths();
+		
+		$this->assertEquals(array(new PathLocator('/var/www/foo/bar')), $paths);
     }
-    
-    /**
+	
+	/**
+	 * testAddPaths description
+	 *
+	 * @param  string
+	 * @param  string
+	 * @param  string
+	 *
+	 * @return  string  testAddPathsReturn
+	 *
+	 * @dataProvider  getPathData
+	 * 
+	 * @since  1.0
+	 */
+	public function testAddPaths($paths, $expects)
+	{
+		$this->collection->addPaths($paths);
+		
+		$paths = $this->collection->getPaths();
+		
+		$this->assertEquals($paths, $expects);
+	}
+	
+	/**
      * addPath description
      *
      * @param  string
@@ -86,11 +128,13 @@ class PathCollection implements \IteratorAggregate
      *
      * @since  1.0
      */
-    public function addPath($path, $key)
+    public function testAddPath()
     {
-        $this->addPaths(array($key => $path));
-        
-        return $this;
+		$path = new PathLocator('/var/foo/bar');
+		
+        $this->collection->addPath($path, 'bar');
+		
+		$this->assertEquals($path, $this->collection->getPath('bar'));
     }
     
     /**
@@ -104,11 +148,17 @@ class PathCollection implements \IteratorAggregate
      *
      * @since  1.0
      */
-    public function removePath($key)
+    public function testRemovePath()
     {
-        unset($this->paths[$key]);
-        
-        return $this;
+		$path = new PathLocator('/var/foo/bar');
+		
+        $this->collection->addPath($path, 'bar');
+		
+        $this->collection->removePath('bar');
+		
+		$path = $this->collection->getPath('bar');
+		
+		$this->assertNull($path);
     }
     
     /**
@@ -120,11 +170,19 @@ class PathCollection implements \IteratorAggregate
      *
      * @return  string  getPathsReturn
      *
+     * @dataProvider  getPathData
+     * 
      * @since  1.0
      */
-    public function getPaths()
+    public function testGetPaths($paths, $expects)
     {
-        return $this->paths;
+		$this->setUp();
+		
+        $this->collection->addPaths($paths);
+		
+		$paths = $this->collection->getPaths();
+		
+		$this->assertEquals($paths, $expects);
     }
     
     /**
@@ -138,24 +196,15 @@ class PathCollection implements \IteratorAggregate
      *
      * @since  1.0
      */
-    public function getPath($key, $default = null)
+    public function testGetPath()
     {
-        if(!isset($this->paths[$key]))
-        {
-            if(!$default)
-            {
-                return $default;
-            }
-            
-            if(!($default instanceof PathLocatorInterface))
-            {
-                $default = new PathLocator($default);
-            }
-            
-            return $default;
-        }
-        
-        return $this->paths[$key];
+        $path = new PathLocator('/var/foo/bar2');
+		
+        $this->collection->addPath($path, 'bar2');
+		
+		$this->assertEquals($path, $this->collection->getPath('bar2'));
+		
+		$this->assertEquals(new PathLocator('/'), $this->collection->getPath('bar3', '/'));
     }
     
     /**
@@ -300,6 +349,4 @@ class PathCollection implements \IteratorAggregate
     {
         
     }
-    
-    
 }
