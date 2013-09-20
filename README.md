@@ -1,9 +1,13 @@
-JFramework PathLocator & PathCollection
+JFramework Path Operator
 ======================
 
 ## Usage
 
 ### PathLocator object
+
+A Path locator, help up locate a system path or relative path.
+
+We can use this object to find files or list files, and also support using callback to filter files.
 
 #### Create a new PathLocator
 
