@@ -22,9 +22,15 @@ use Joomla\Filesystem\Path\PathCollection;
 // Start test collection
 
 $pc = new PathCollection(array(
-    new PathLocator(JPATH_BASE . '/src/Joomla/Filesystem/Tests/files'),
-    new PathLocator(JPATH_BASE . '/vendor')
+    'a' => new PathLocator(JPATH_BASE . '/src/Joomla/Filesystem/Tests/files'),
+    'b' => new PathLocator(JPATH_BASE . '/vendor')
 ));
+
+class A extends \ArrayObject {
+    
+}
+
+show($pc['a']);
 
 foreach($pc as $pl)
 {
@@ -40,7 +46,7 @@ foreach($pc->getFolders(true) as $pl)
 
 echo '<br><br>';
 
-foreach($pc->getDirectoryIterator() as $pl)
+foreach($pc->getAllChildren() as $pl)
 {
     echo $pl . '<br>';
 }
