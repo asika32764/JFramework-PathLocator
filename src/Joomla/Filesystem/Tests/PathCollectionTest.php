@@ -74,6 +74,94 @@ class PathCollectionTest extends PHPUnit_Framework_TestCase
 			)
 		);
 	}
+	
+	/**
+	 * Data provider for testClean() method.
+	 *
+	 * @return  array
+	 *
+	 * @since   1.0
+	 */
+	public function getIteratorData()
+	{
+		return array(
+			'no rescurive' => array(
+				array(
+					__DIR__ . 'files/folder1',
+					__DIR__ . 'files/folder2'
+				),
+				
+				array(
+					Path::clean(__DIR__ . 'files/folder1'),
+					Path::clean(__DIR__ . 'files/folder2')
+				),
+				
+				false
+			),
+			/*
+			'rescurive' => array(
+				array(
+					__DIR__ . 'files'
+				),
+				
+				array(
+					Path::clean(__DIR__ . 'files/folder1'),
+					Path::clean(__DIR__ . 'files/folder1/file1'),
+					Path::clean(__DIR__ . 'files/folder2/file2.html'),
+					Path::clean(__DIR__ . 'files/file2.txt')
+				),
+				
+				true
+			)
+			*/
+		);
+	}
+	
+	/**
+	 * name description
+	 *
+	 * @param  string
+	 * @param  string
+	 * @param  string
+	 *
+	 * @return  string  nameReturn
+	 *
+	 * @since  1.0
+	 */
+	public function getIteratorRescuriveData()
+	{
+		return array(
+			'no rescurive' => array(
+				array(
+					__DIR__ . 'files/folder1',
+					__DIR__ . 'files/folder2',
+					__DIR__ . 'files/file2.txt',
+				),
+				
+				array(
+					Path::clean(__DIR__ . 'files/folder1'),
+					Path::clean(__DIR__ . 'files/folder2')
+				),
+				
+				false
+			),
+			
+			'rescurive' => array(
+				array(
+					__DIR__ . 'files'
+				),
+				
+				array(
+					Path::clean(__DIR__ . 'files/folder1'),
+					Path::clean(__DIR__ . 'files/folder1/path1'),
+					Path::clean(__DIR__ . 'files/folder2/file2.html'),
+					Path::clean(__DIR__ . 'files/file2.txt')
+				),
+				
+				true
+			)
+		);
+	}
     
     /**
      * test__construct description
@@ -216,11 +304,43 @@ class PathCollectionTest extends PHPUnit_Framework_TestCase
      *
      * @return  string  getIteratorReturn
      *
+     * @dataProvider  getIteratorData
+     *
      * @since  1.0
      */
-    public function getIterator()
+    public function testGetIterator($paths, $expects, $rescursive)
     {
+		$this->setUp();
+		
+		$this->collection->addPaths($paths);
+		
+		$iterator = $this->collection->getIterator($rescursive);
+		
+		$compare = array();
+		
+		foreach($iterator as $file)
+		{
+			$compare[] = (string) $file;
+		}
+		
+		$this->assertEquals($compare, $expects);
     }
+	
+	/**
+	 * testDiresctoryIterator description
+	 *
+	 * @param  string
+	 * @param  string
+	 * @param  string
+	 *
+	 * @return  string  testDiresctoryIteratorReturn
+	 *
+	 * @since  1.0
+	 */
+	public function testGetDiresctoryIterator()
+	{
+		
+	}
     
     /**
      * setPrefix description
@@ -233,9 +353,26 @@ class PathCollectionTest extends PHPUnit_Framework_TestCase
      *
      * @since  1.0
      */
-    public function setPrefix()
+    public function testSetPrefix()
     {
-        
+        $this->setUp();
+		
+		$this->collection->addPath('joomla/dir/foo/bar', 'foo');
+		$this->collection->addPath('joomla/dir/yoo/hoo', 'yoo');
+		
+		$this->collection->setPrefix('/var/www');
+		
+		$expects = array(
+			Path::clean('/var/www/joomla/dir/foo/bar'),
+			Path::clean('/var/www/joomla/dir/yoo/hoo'),
+		);
+		
+		$paths = array(
+			(string) $this->collection->getPath('foo'),
+			(string) $this->collection->getPath('yoo')
+		);
+		
+		$this->assertEquals($paths, $expects);
     }
     
     /**

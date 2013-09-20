@@ -21,3 +21,26 @@ use Joomla\Filesystem\Path\PathCollection;
 
 // Start test collection
 
+$pc = new PathCollection(array(
+    new PathLocator(JPATH_BASE . '/src/Joomla/Filesystem/Tests/files'),
+    new PathLocator(JPATH_BASE . '/vendor')
+));
+
+foreach($pc as $pl)
+{
+    echo $pl . '<br>';
+}
+
+echo '<br><br>';
+
+foreach($pc->getFolders(true) as $pl)
+{
+    echo $pl . '<br>';
+}
+
+echo '<br><br>';
+
+foreach($pc->getDirectoryIterator() as $pl)
+{
+    echo $pl . '<br>';
+}

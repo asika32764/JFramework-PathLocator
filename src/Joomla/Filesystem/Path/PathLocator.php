@@ -91,7 +91,14 @@ class PathLocator implements PathLocatorInterface, \IteratorAggregate
 	 */
 	public function createIterator($recursive = false)
 	{
-		$iterator = new RecursiveDirectoryIterator((string)$this);
+		try
+		{
+			$iterator = new RecursiveDirectoryIterator((string)$this);
+		}
+		catch(\UnexpectedValueException $exception)
+		{
+			throw new \InvalidArgumentException(sprintf('Dir: %s not found.', (string)$this), null);
+		}
 		
 		// If rescurive set to true, use RecursiveIteratorIterator
 		return $recursive ? new \RecursiveIteratorIterator($iterator) : $iterator;
@@ -242,7 +249,7 @@ class PathLocator implements PathLocatorInterface, \IteratorAggregate
 		// If set to return string, compact it.
 		if($returnString == true)
 		{
-			$path = $thsi->compact($path);
+			$path = $this->compact($path);
 		}
 		
 		return $path;
@@ -361,7 +368,7 @@ class PathLocator implements PathLocatorInterface, \IteratorAggregate
 	 */
 	public function setPrefix($prefix = '')
 	{
-		$prefix = $this->regularize($prefix);
+		$this->prefix = $this->regularize($prefix, true);
 		
 		return $this;
 	}

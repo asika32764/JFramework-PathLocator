@@ -54,16 +54,18 @@ class PathCollection implements \IteratorAggregate
         
         foreach($paths as $key => $path)
         {
+            $key = is_int($key) ? null : $key;
+            
             // If path element is subclass of PathLocatorInterface, just put it in path bag.
             // You can create any your Path locator class implements from PathLocatorInterface.
             if($path instanceof PathLocatorInterface)
             {
-                $this->paths[$key] = $path;
+                $this->addPath($path, $key);
             }
             // If this element is a path string, we create a PathLocator to wrap it.
             elseif(is_string($path) || !$path)
             {
-                $this->paths[$key] = new PathLocator($path);
+                $this->addPath(new PathLocator($path), $key);
             }
             // If type of this element not match our interface, throw exception.
             else
@@ -86,9 +88,15 @@ class PathCollection implements \IteratorAggregate
      *
      * @since  1.0
      */
-    public function addPath($path, $key)
+    public function addPath($path, $key = null)
     {
-        $this->addPaths(array($key => $path));
+        if($key){
+            $this->paths[$key] = $path;
+        }
+        else
+        {
+            $this->paths[] = $path;
+        }
         
         return $this;
     }
@@ -171,6 +179,56 @@ class PathCollection implements \IteratorAggregate
      */
     public function getIterator()
     {
+        return new \ArrayObject($this->paths);
+    }
+    
+    /**
+     * getDirectoryIterator description
+     *
+     * @param  string
+     * @param  string
+     * @param  string
+     *
+     * @return  string  getDirectoryIteratorReturn
+     *
+     * @since  1.0
+     */
+    public function getDirectoryIterator($recursive = false)
+    {
+        return $this->appendIterator(function ($path) use ($recursive)
+        {
+            return $path->getIterator($recursive);
+        });
+    }
+    
+    /**
+     * appendIterator description
+     *
+     * @param  string
+     * @param  string
+     * @param  string
+     *
+     * @return  string  appendIteratorReturn
+     *
+     * @since  1.0
+     */
+    protected function appendIterator(\Closure $callback = null)
+    {
+        $iterator = new \AppendIterator();
+        
+        $paths = $this->paths;
+        
+        $callback = function($path) use($callback, $iterator)
+        {
+            return $iterator->append($callback($path));
+        };
+        
+        foreach($this->paths as $path)
+        {   
+            $callback($path);
+        }
+        
+        return $iterator;
     }
     
     /**
@@ -184,9 +242,12 @@ class PathCollection implements \IteratorAggregate
      *
      * @since  1.0
      */
-    public function setPrefix()
+    public function setPrefix($prefix)
     {
-        
+        foreach($this->paths as &$path)
+        {
+            $path->setPrefix($prefix);
+        }
     }
     
     /**
@@ -200,9 +261,16 @@ class PathCollection implements \IteratorAggregate
      *
      * @since  1.0
      */
-    public function find()
+    public function find($condition, $rescurive = false)
     {
+        $iterator = $this->appendIterator(function ($path) use ($recursive)
+        {
+            return $path->findAll($condition, $rescurive);
+        });
         
+        $iterator->rewind();
+        
+        return $iterator->current();
     }
     
     /**
@@ -218,7 +286,10 @@ class PathCollection implements \IteratorAggregate
      */
     public function findAll()
     {
-        
+        return $this->appendIterator(function ($path) use ($recursive)
+        {
+            return $path->findAll($condition, $rescurive);
+        });
     }
     
     /**
@@ -234,7 +305,7 @@ class PathCollection implements \IteratorAggregate
      */
     public function toArray()
     {
-        
+        return $this->paths;
     }
     
     /**
@@ -248,9 +319,12 @@ class PathCollection implements \IteratorAggregate
      *
      * @since  1.0
      */
-    public function getFiles($rescursive = false)
+    public function getFiles($recursive = false)
     {
-        
+        return $this->appendIterator(function ($path) use ($recursive)
+        {
+            return $path->getFiles($recursive);
+        });
     }
     
     /**
@@ -264,9 +338,12 @@ class PathCollection implements \IteratorAggregate
      *
      * @since  1.0
      */
-    public function getFolders($rescursive)
+    public function getFolders($recursive = false)
     {
-        
+        return $this->appendIterator(function ($path) use ($recursive)
+        {
+            return $path->getFolders($recursive);
+        });
     }
     
     /**
