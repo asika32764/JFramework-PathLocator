@@ -1,7 +1,7 @@
 <?php
 /**
  * @copyright  Copyright (C) 2005 - 2011 Open Source Matters, Inc. All rights reserved.
- * @license    GNU General Public License version 2 or later; see LICENSE
+ * @license	GNU General Public License version 2 or later; see LICENSE
  */
 
 use Joomla\Filesystem\Path;
@@ -15,25 +15,25 @@ use Joomla\Filesystem\Path\PathCollection;
  */
 class PathCollectionTest extends PHPUnit_Framework_TestCase
 {
-    public $collection;
-    
-    /**
-     * setUp description
-     *
-     * @param  string
-     * @param  string
-     * @param  string
-     *
-     * @return  string  setUpReturn
-     *
-     * @since  1.0
-     */
-    public function setUp()
-    {
-        $this->collection = new PathCollection();
-    }
-    
-    /**
+	public $collection;
+	
+	/**
+	 * setUp description
+	 *
+	 * @param  string
+	 * @param  string
+	 * @param  string
+	 *
+	 * @return  string  setUpReturn
+	 *
+	 * @since  1.0
+	 */
+	public function setUp()
+	{
+		$this->collection = new PathCollection();
+	}
+	
+	/**
 	 * Data provider for testClean() method.
 	 *
 	 * @return  array
@@ -49,7 +49,7 @@ class PathCollectionTest extends PHPUnit_Framework_TestCase
 				array(new PathLocator('/var/www/foo/bar'))
 			),
 			
-            'paths with on key' => array(
+			'paths with on key' => array(
 				array(
 					'/',
 					'/var/www/foo/bar',
@@ -62,7 +62,7 @@ class PathCollectionTest extends PHPUnit_Framework_TestCase
 				)
 			),
 			
-            'paths with key' => array(
+			'paths with key' => array(
 				array(
 					'root' => '/',
 					'foo' => '/var/www/foo'
@@ -162,26 +162,26 @@ class PathCollectionTest extends PHPUnit_Framework_TestCase
 			)
 		);
 	}
-    
-    /**
-     * test__construct description
-     *
-     * @param  string
-     * @param  string
-     * @param  string
-     *
-     * @return  string  test__constructReturn
-     *
-     * @since  1.0
-     */
-    public function test__construct()
-    {
-        $collections = new PathCollection('/var/www/foo/bar');
-        
-        $paths = $collections->getPaths();
+	
+	/**
+	 * test__construct description
+	 *
+	 * @param  string
+	 * @param  string
+	 * @param  string
+	 *
+	 * @return  string  test__constructReturn
+	 *
+	 * @since  1.0
+	 */
+	public function test__construct()
+	{
+		$collections = new PathCollection('/var/www/foo/bar');
+		
+		$paths = $collections->getPaths();
 		
 		$this->assertEquals(array(new PathLocator('/var/www/foo/bar')), $paths);
-    }
+	}
 	
 	/**
 	 * testAddPaths description
@@ -206,110 +206,110 @@ class PathCollectionTest extends PHPUnit_Framework_TestCase
 	}
 	
 	/**
-     * addPath description
-     *
-     * @param  string
-     * @param  string
-     * @param  string
-     *
-     * @return  string  addPathReturn
-     *
-     * @since  1.0
-     */
-    public function testAddPath()
-    {
+	 * addPath description
+	 *
+	 * @param  string
+	 * @param  string
+	 * @param  string
+	 *
+	 * @return  string  addPathReturn
+	 *
+	 * @since  1.0
+	 */
+	public function testAddPath()
+	{
 		$path = new PathLocator('/var/foo/bar');
 		
-        $this->collection->addPath($path, 'bar');
+		$this->collection->addPath($path, 'bar');
 		
 		$this->assertEquals($path, $this->collection->getPath('bar'));
-    }
-    
-    /**
-     * removePath description
-     *
-     * @param  string
-     * @param  string
-     * @param  string
-     *
-     * @return  string  removePathReturn
-     *
-     * @since  1.0
-     */
-    public function testRemovePath()
-    {
+	}
+	
+	/**
+	 * removePath description
+	 *
+	 * @param  string
+	 * @param  string
+	 * @param  string
+	 *
+	 * @return  string  removePathReturn
+	 *
+	 * @since  1.0
+	 */
+	public function testRemovePath()
+	{
 		$path = new PathLocator('/var/foo/bar');
 		
-        $this->collection->addPath($path, 'bar');
+		$this->collection->addPath($path, 'bar');
 		
-        $this->collection->removePath('bar');
+		$this->collection->removePath('bar');
 		
 		$path = $this->collection->getPath('bar');
 		
 		$this->assertNull($path);
-    }
-    
-    /**
-     * getPaths description
-     *
-     * @param  string
-     * @param  string
-     * @param  string
-     *
-     * @return  string  getPathsReturn
-     *
-     * @dataProvider  getPathData
-     * 
-     * @since  1.0
-     */
-    public function testGetPaths($paths, $expects)
-    {
+	}
+	
+	/**
+	 * getPaths description
+	 *
+	 * @param  string
+	 * @param  string
+	 * @param  string
+	 *
+	 * @return  string  getPathsReturn
+	 *
+	 * @dataProvider  getPathData
+	 * 
+	 * @since  1.0
+	 */
+	public function testGetPaths($paths, $expects)
+	{
 		$this->setUp();
 		
-        $this->collection->addPaths($paths);
+		$this->collection->addPaths($paths);
 		
 		$paths = $this->collection->getPaths();
 		
 		$this->assertEquals($paths, $expects);
-    }
-    
-    /**
-     * getPath description
-     *
-     * @param  string
-     * @param  string
-     * @param  string
-     *
-     * @return  string  getPathReturn
-     *
-     * @since  1.0
-     */
-    public function testGetPath()
-    {
-        $path = new PathLocator('/var/foo/bar2');
+	}
+	
+	/**
+	 * getPath description
+	 *
+	 * @param  string
+	 * @param  string
+	 * @param  string
+	 *
+	 * @return  string  getPathReturn
+	 *
+	 * @since  1.0
+	 */
+	public function testGetPath()
+	{
+		$path = new PathLocator('/var/foo/bar2');
 		
-        $this->collection->addPath($path, 'bar2');
+		$this->collection->addPath($path, 'bar2');
 		
 		$this->assertEquals($path, $this->collection->getPath('bar2'));
 		
 		$this->assertEquals(new PathLocator('/'), $this->collection->getPath('bar3', '/'));
-    }
-    
-    /**
-     * getIterator description
-     *
-     * @param  string
-     * @param  string
-     * @param  string
-     *
-     * @return  string  getIteratorReturn
-     *
-     * @dataProvider  getIteratorData
-     *
-     * @since  1.0
-     */
-    public function testGetIterator($paths, $expects, $rescursive)
-    {
+	}
+	
+	/**
+	 * getIterator description
+	 *
+	 * @param  string
+	 * @param  string
+	 * @param  string
+	 *
+	 * @return  string  getIteratorReturn
+	 *
+	 * @dataProvider  getIteratorData
+	 *
+	 * @since  1.0
+	 */
+	public function testGetIterator($paths, $expects, $rescursive)
+	{
 		$this->setUp();
 		
 		$this->collection->addPaths($paths);
@@ -324,7 +324,7 @@ class PathCollectionTest extends PHPUnit_Framework_TestCase
 		}
 		
 		$this->assertEquals($compare, $expects);
-    }
+	}
 	
 	/**
 	 * testDiresctoryIterator description
@@ -341,21 +341,21 @@ class PathCollectionTest extends PHPUnit_Framework_TestCase
 	{
 		
 	}
-    
-    /**
-     * setPrefix description
-     *
-     * @param  string
-     * @param  string
-     * @param  string
-     *
-     * @return  string  setPrefixReturn
-     *
-     * @since  1.0
-     */
-    public function testSetPrefix()
-    {
-        $this->setUp();
+	
+	/**
+	 * setPrefix description
+	 *
+	 * @param  string
+	 * @param  string
+	 * @param  string
+	 *
+	 * @return  string  setPrefixReturn
+	 *
+	 * @since  1.0
+	 */
+	public function testSetPrefix()
+	{
+		$this->setUp();
 		
 		$this->collection->addPath('joomla/dir/foo/bar', 'foo');
 		$this->collection->addPath('joomla/dir/yoo/hoo', 'yoo');
@@ -373,117 +373,117 @@ class PathCollectionTest extends PHPUnit_Framework_TestCase
 		);
 		
 		$this->assertEquals($paths, $expects);
-    }
-    
-    /**
-     * find description
-     *
-     * @param  string
-     * @param  string
-     * @param  string
-     *
-     * @return  string  findReturn
-     *
-     * @since  1.0
-     */
-    public function find()
-    {
-        
-    }
-    
-    /**
-     * findAll description
-     *
-     * @param  string
-     * @param  string
-     * @param  string
-     *
-     * @return  string  findAllReturn
-     *
-     * @since  1.0
-     */
-    public function findAll()
-    {
-        
-    }
-    
-    /**
-     * toArray description
-     *
-     * @param  string
-     * @param  string
-     * @param  string
-     *
-     * @return  string  toArrayReturn
-     *
-     * @since  1.0
-     */
-    public function toArray()
-    {
-        
-    }
-    
-    /**
-     * getFiles description
-     *
-     * @param  string
-     * @param  string
-     * @param  string
-     *
-     * @return  string  getFilesReturn
-     *
-     * @since  1.0
-     */
-    public function getFiles($rescursive = false)
-    {
-        
-    }
-    
-    /**
-     * getFolders description
-     *
-     * @param  string
-     * @param  string
-     * @param  string
-     *
-     * @return  string  getFoldersReturn
-     *
-     * @since  1.0
-     */
-    public function getFolders($rescursive)
-    {
-        
-    }
-    
-    /**
-     * appendAll description
-     *
-     * @param  string
-     * @param  string
-     * @param  string
-     *
-     * @return  string  appendAllReturn
-     *
-     * @since  1.0
-     */
-    public function appendAll()
-    {
-        
-    }
-    
-    /**
-     * prependAll description
-     *
-     * @param  string
-     * @param  string
-     * @param  string
-     *
-     * @return  string  prependAllReturn
-     *
-     * @since  1.0
-     */
-    public function prependAll()
-    {
-        
-    }
+	}
+	
+	/**
+	 * find description
+	 *
+	 * @param  string
+	 * @param  string
+	 * @param  string
+	 *
+	 * @return  string  findReturn
+	 *
+	 * @since  1.0
+	 */
+	public function find()
+	{
+		
+	}
+	
+	/**
+	 * findAll description
+	 *
+	 * @param  string
+	 * @param  string
+	 * @param  string
+	 *
+	 * @return  string  findAllReturn
+	 *
+	 * @since  1.0
+	 */
+	public function findAll()
+	{
+		
+	}
+	
+	/**
+	 * toArray description
+	 *
+	 * @param  string
+	 * @param  string
+	 * @param  string
+	 *
+	 * @return  string  toArrayReturn
+	 *
+	 * @since  1.0
+	 */
+	public function toArray()
+	{
+		
+	}
+	
+	/**
+	 * getFiles description
+	 *
+	 * @param  string
+	 * @param  string
+	 * @param  string
+	 *
+	 * @return  string  getFilesReturn
+	 *
+	 * @since  1.0
+	 */
+	public function getFiles($rescursive = false)
+	{
+		
+	}
+	
+	/**
+	 * getFolders description
+	 *
+	 * @param  string
+	 * @param  string
+	 * @param  string
+	 *
+	 * @return  string  getFoldersReturn
+	 *
+	 * @since  1.0
+	 */
+	public function getFolders($rescursive)
+	{
+		
+	}
+	
+	/**
+	 * appendAll description
+	 *
+	 * @param  string
+	 * @param  string
+	 * @param  string
+	 *
+	 * @return  string  appendAllReturn
+	 *
+	 * @since  1.0
+	 */
+	public function appendAll()
+	{
+		
+	}
+	
+	/**
+	 * prependAll description
+	 *
+	 * @param  string
+	 * @param  string
+	 * @param  string
+	 *
+	 * @return  string  prependAllReturn
+	 *
+	 * @since  1.0
+	 */
+	public function prependAll()
+	{
+		
+	}
 }

@@ -150,7 +150,14 @@ class PathLocator implements PathLocatorInterface, \IteratorAggregate
 	/**
 	 * Find one file and return.
 	 *
-	 * @param  mixed    $condition  A string or regex to find file.
+	 * @param  mixed   $condition  Finding condition, that can be a string, a regex or a callback function.
+	 *                            Callback example:
+	 *                            <code>
+	 *                            function($current, $key, $iterator)
+	 *                            {
+	 *                                return @preg_match('^Foo', $current->getFilename())  && ! $iterator->isDot();
+	 *                            }
+	 *                            </code>
 	 * @param  boolean  $recursive  True to resursive.
 	 *
 	 * @return  \SplFileInfo  Finded file info object.
@@ -169,7 +176,14 @@ class PathLocator implements PathLocatorInterface, \IteratorAggregate
 	/**
 	 * Find all files which matches condition.
 	 *
-	 * @param  mixed    $condition  A string or regex to find file.
+	 * @param  mixed   $condition  Finding condition, that can be a string, a regex or a callback function.
+	 *                            Callback example:
+	 *                            <code>
+	 *                            function($current, $key, $iterator)
+	 *                            {
+	 *                                return @preg_match('^Foo', $current->getFilename())  && ! $iterator->isDot();
+	 *                            }
+	 *                            </code>
 	 * @param  boolean  $recursive  True to resursive.
 	 *
 	 * @return  \CallbackFilterIterator  Finded files or paths iterator.
