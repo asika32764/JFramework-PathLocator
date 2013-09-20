@@ -9,6 +9,7 @@
 namespace Joomla\Filesystem\Path;
 
 use Joomla\Filesystem\Path;
+use Joomla\Filesystem\Path\PathLocatorInterface;
 use Joomla\Filesystem\Comparator\FileComparatorInterface;
 use Joomla\Filesystem\Iterator\RecursiveDirectoryIterator;
 
@@ -17,7 +18,7 @@ use Joomla\Filesystem\Iterator\RecursiveDirectoryIterator;
  *
  * @since  1.0
  */
-class PathLocator implements \IteratorAggregate
+class PathLocator implements PathLocatorInterface, \IteratorAggregate
 {
 	/**
 	 * Path prefix
