@@ -216,7 +216,7 @@ class PathCollection implements \IteratorAggregate
     {
         $iterator = new \AppendIterator();
         
-        $paths = $this->paths;
+        $paths    = $this->paths;
         
         $callback = function($path) use($callback, $iterator)
         {
@@ -224,7 +224,8 @@ class PathCollection implements \IteratorAggregate
         };
         
         foreach($this->paths as $path)
-        {   
+        {
+            if($this->isSubdir($path)) continue;
             $callback($path);
         }
         
@@ -378,5 +379,27 @@ class PathCollection implements \IteratorAggregate
         
     }
     
-    
+    /**
+     * isSubdir description
+     *
+     * @param  string
+     * @param  string
+     * @param  string
+     *
+     * @return  string  isSubdirReturn
+     *
+     * @since  1.0
+     */
+    public function isSubdir($path)
+    {
+        foreach($this->paths as $val)
+        {
+            if($val->isSubdirOf($path))
+            {
+                return true;
+            }
+        }
+        
+        return false;
+    }
 }

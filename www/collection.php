@@ -44,3 +44,16 @@ foreach($pc->getDirectoryIterator() as $pl)
 {
     echo $pl . '<br>';
 }
+
+echo '<br><h3>Subdir test</h3><br>';
+
+$pc = new PathCollection(array(
+    new PathLocator(JPATH_BASE . '/src/Joomla/Filesystem/Tests/files'),
+    new PathLocator(JPATH_BASE . '/src/Joomla/Filesystem/')
+));
+
+
+foreach($pc->getFolders(true) as $pl)
+{
+    echo $pl . '<br>';
+}

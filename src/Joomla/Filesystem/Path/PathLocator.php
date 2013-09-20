@@ -466,6 +466,38 @@ class PathLocator implements PathLocatorInterface, \IteratorAggregate
 	}
 	
 	/**
+	 * isSubdir description
+	 *
+	 * @param  string
+	 * @param  string
+	 * @param  string
+	 *
+	 * @return  string  isSubdirReturn
+	 *
+	 * @since  1.0
+	 */
+	public function isSubdirOf($parent)
+	{
+		$self = (string) $this;
+		
+		$parent = $this->regularize($parent, true);
+		
+		// Path is self
+		if($self == $parent)
+		{
+			return false;
+		}
+		
+		// Path is parent
+		if(strpos($parent, $self) === 0)
+		{
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
 	 * Convert this object to string.
 	 *
 	 * @return  string  Path name.
