@@ -14,10 +14,16 @@ $path = new PathLocator('/var/www/joomla');
 #### Convert to string
 
 ``` php
-echo $path or (string) $path;
+echo $path
+
+//or
+
+(string) $path;
 ```
 
 #### Path operation
+
+Use chaining to operate path.
 
 ##### Child
 
@@ -25,7 +31,6 @@ echo $path or (string) $path;
 $path->child('plugins')           // => /var/www/joomla/plugins
     ->child('system/joomla/lib')  // => /var/www/joomla/plugins/system/joomla/lib
     ;
-
 ```
 
 ##### Parent
@@ -35,10 +40,11 @@ $path->parent()       // => /var/www/joomla/plugins/system/joomla (Up one level)
     ->parent(2)       // => /var/www/joomla/plugins               (Up 2 levels)
     ->parent('www')   // => /var/www                              (Fiind a parent and go this level)
     ;
-
 ```
 
 ##### Prefix
+
+Add a prefix of system path, we can change it, only when convert to string, the prefix will been added to path.
 
 ``` php
 $path2 = new PathLocator('src/Component/Issues');
@@ -48,14 +54,14 @@ echo $path->addPrefix(JPATH_ROOT); // => /var/www/src/Component/Issues
 #### Filesystem Operation
 
 ``` php
-echo $path->isDir(); // true or false
+echo $path->isDir();  // true or false
 echo $path->isFile(); // true or false
-echo $path->exists();
+echo $path->exists(); // true or false
 ```
 
 ##### Get file info
 
-This function not prepared yet.
+This function has not prepared yet.
 
 ``` php
 $path->getInfo();            // return SplFileInfo of current directory
@@ -130,15 +136,21 @@ $dls->child('../www/index.php'); // throw PathNotDirException();
 
 ### PathCollection object
 
+A collection of paths, we can put many paths to this object, and use it as array.
+
+And we can use this collection to iterate all sub dirs and files, also find files.
+
+The iterator will travel to every `PathLocator` in this collection object, and return an SplFileInfo for us.
+
 #### Create a new PathCollection
 
 ##### Add with no key
 
 ``` php
 new $paths = new PathColleciotn(array(
-    new PathLocator('templates/' . $template . '/html/' . $com),
-    new PathLocator('components/' . $com . '/view/tmpl/'),
-    new PathLocator('layouts/' . $com)
+    new PathLocator('templates/' . $template . '/html/' . $option),
+    new PathLocator('components/' . $option . '/view/tmpl/'),
+    new PathLocator('layouts/' . $option)
 ));
 ```
 
@@ -146,20 +158,25 @@ new $paths = new PathColleciotn(array(
 
 ``` php
 new $paths = new PathColleciotn(array(
-    'Template'  => new PathLocator('templates/' . $template . '/html/' . $com),
-    'Component' => new PathLocator('components/' . $com . '/view/tmpl/'),
-    'Layout'    => new PathLocator('layouts/' . $com)
+    'Template'  => new PathLocator('templates/' . $template . '/html/' . $option),
+    'Component' => new PathLocator('components/' . $option . '/view/tmpl/'),
+    'Layout'    => new PathLocator('layouts/' . $option)
 ));
 ```
 
 #### Paths operations
 
-##### Add paths
+##### Add path
 
 ``` php
 $paths->addPath(new PathLocator('Foo'));        // No key name, will using number as key
 
 $paths->addPath(new PathLocator('Foo'), 'Foo'); // With key name
+```
+
+##### Add paths
+
+``` php
 
 $paths->addPaths(array(new PathLocator('Bar'))); // Add by array
 ```
@@ -171,15 +188,15 @@ $paths->removePath('Foo');  // Remove by key name
 $paths->removePath(0);      // Remove by number
 ```
 
-##### Set prefix
+##### Set prefix to all paths
+
+We can change this prefix, only when converting to string,
+the prefix will have been added to path.
 
 ``` php
 // Prepend all path with a prefix path.
 
 $paths->setPrefix('/var/www/joomla');
-
-// We can change this prefix, only when converting to string,
-// the prefix will have been added to path.
 ```
 
 
@@ -190,6 +207,15 @@ List all PathLocator
 
 ``` php
 foreach($paths as $path)
+{
+    echo $path // print path string
+}
+```
+
+Return a raw array
+
+``` php
+foreach($paths->toArray() as $path)
 {
     echo $path // print path string
 }
@@ -224,7 +250,7 @@ foreach($paths->getFolders([true to recrusive]) as $dir)
 
 #### Find Files and Folders
 
-Same as PathLocator, but return all paths file & folders.
+Same as PathLocator, but return all paths' file & folders.
 
 ``` php
 $paths->find('config.json');
