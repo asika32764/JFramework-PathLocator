@@ -10,6 +10,7 @@ namespace Joomla\Filesystem\Path;
 
 use Joomla\Filesystem\Path;
 use Joomla\Filesystem\Comparator\FileComparatorInterface;
+use Joomla\Filesystem\Iterator\RecursiveDirectoryIterator;
 
 /**
  * A Path locator class
@@ -89,7 +90,7 @@ class PathLocator implements \IteratorAggregate
 	 */
 	public function createIterator($recursive = false)
 	{
-		$iterator = new \RecursiveDirectoryIterator((string)$this);
+		$iterator = new RecursiveDirectoryIterator((string)$this);
 		
 		// If rescurive set to true, use RecursiveIteratorIterator
 		return $recursive ? new \RecursiveIteratorIterator($iterator) : $iterator;
@@ -114,7 +115,7 @@ class PathLocator implements \IteratorAggregate
 			{
 				// If set to recursive, every rturned folder name will include a dot (.),
 				// so we can't using isDot() to detect folder.
-				return $iterator->isDir() && ($current->getBasename() == '..') ;
+				return $iterator->isDir() && ($current->getBasename() != '..') ;
 			}
 			else
 			{
@@ -169,6 +170,7 @@ class PathLocator implements \IteratorAggregate
 	 */
 	public function findAll($condition, $recursive = false)
 	{
+		// If conditions is string or array, we make it to regex.
 		if(!($condition instanceof \Closure) && !($condition instanceof FileComparatorInterface))
 		{
 			if(is_array($condition))
@@ -183,15 +185,16 @@ class PathLocator implements \IteratorAggregate
 			$condition = function($current, $key, $iterator) use ($condition)
 			{
 				return @preg_match($condition, $iterator->getFilename())  && ! $iterator->isDot();
-			}; // callback end
+			}; // end callback
 		}
+		// If condition is campare object, wrap it with callback.
 		elseif($condition instanceof FileComparatorInterface)
 		{
 			// Create callback
 			$condition = function($current, $key, $iterator) use ($condition)
 			{
 				return $condition->compare($current, $key, $iterator);
-			}; // callback end
+			}; // end callback
 		}
 		
 		return $this->findByCallback($condition, $recursive);

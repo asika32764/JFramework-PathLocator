@@ -89,9 +89,9 @@ echo '<br><br>';
 
 // Show all files
 $plimit = new PathLocator('D:/www/repo/path');
-show( $plimit->find('README.md'));
-foreach( with(new PathLocator('D:/www/repo/path'))->find('README.md') as $dir ):
-    //echo $dir . '<br>';
+
+foreach( with(new PathLocator('D:/www/repo/path'))->getFolders(true) as $dir ):
+    echo $dir . '<br>';
 endforeach;
 
 
