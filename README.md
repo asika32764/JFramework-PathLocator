@@ -1,9 +1,7 @@
 JFramework Path Operator
 ======================
 
-## Usage
-
-### PathLocator object
+## PathLocator object
 
 A Path locator, help us locate a system path or relative path.
 
@@ -151,7 +149,7 @@ $dls->child('../www/index.php'); // throw PathNotDirException();
 
 *
 
-### PathCollection object
+## PathCollection object
 
 A collection of paths, we can put many paths to this object, and use it as array.
 
