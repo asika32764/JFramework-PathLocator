@@ -87,13 +87,13 @@ class PathCollectionTest extends PHPUnit_Framework_TestCase
 		return array(
 			'no rescurive' => array(
 				array(
-					__DIR__ . 'files/folder1',
-					__DIR__ . 'files/folder2'
+					__DIR__ . '/files/folder1',
+					__DIR__ . '/files/folder2'
 				),
 				
 				array(
-					Path::clean(__DIR__ . 'files/folder1'),
-					Path::clean(__DIR__ . 'files/folder2')
+					Path::clean(__DIR__ . '/files/folder1'),
+					Path::clean(__DIR__ . '/files/folder2')
 				),
 				
 				false
@@ -128,19 +128,19 @@ class PathCollectionTest extends PHPUnit_Framework_TestCase
 	 *
 	 * @since  1.0
 	 */
-	public function getIteratorRescuriveData()
+	public function getIteratorRecursiveData()
 	{
 		return array(
 			'no rescurive' => array(
 				array(
-					__DIR__ . 'files/folder1',
-					__DIR__ . 'files/folder2',
-					__DIR__ . 'files/file2.txt',
+					__DIR__ . '/files/folder1',
+					__DIR__ . '/files/folder2',
+					__DIR__ . '/files/file2.txt',
 				),
 				
 				array(
-					Path::clean(__DIR__ . 'files/folder1'),
-					Path::clean(__DIR__ . 'files/folder2')
+					Path::clean(__DIR__ . '/files/folder1'),
+					Path::clean(__DIR__ . '/files/folder2')
 				),
 				
 				false
@@ -148,14 +148,14 @@ class PathCollectionTest extends PHPUnit_Framework_TestCase
 			
 			'rescurive' => array(
 				array(
-					__DIR__ . 'files'
+					__DIR__ . '/files'
 				),
 				
 				array(
-					Path::clean(__DIR__ . 'files/folder1'),
-					Path::clean(__DIR__ . 'files/folder1/path1'),
-					Path::clean(__DIR__ . 'files/folder2/file2.html'),
-					Path::clean(__DIR__ . 'files/file2.txt')
+					Path::clean(__DIR__ . '/files/folder1'),
+					Path::clean(__DIR__ . '/files/folder1/path1'),
+					Path::clean(__DIR__ . '/files/folder2/file2.html'),
+					Path::clean(__DIR__ . '/files/file2.txt')
 				),
 				
 				true
@@ -314,7 +314,7 @@ class PathCollectionTest extends PHPUnit_Framework_TestCase
 		
 		$this->collection->addPaths($paths);
 		
-		$iterator = $this->collection->getIterator($rescursive);
+		$iterator = $this->collection;
 		
 		$compare = array();
 		
