@@ -19,18 +19,18 @@ use Joomla\Filesystem\Path\PathLocatorInterface;
  */
 class PathCollection extends \ArrayObject
 {
-    /**
-     * Paths bag.
-     *
-     * @var array 
-     */
+	/**
+	 * Paths bag.
+	 *
+	 * @var array 
+	 */
 	protected $paths = array();
 	
 	/**
-     * Paths bag.
-     *
-     * @var array 
-     */
+	 * Paths bag.
+	 *
+	 * @var array 
+	 */
 	protected $storage = array();
 	
 	/**
@@ -74,7 +74,7 @@ class PathCollection extends \ArrayObject
 	 * Add one path to bag.
 	 *
 	 * @param   mixed   $path  The path your want to store in bag,
-	 *                       have to be a string or PathLocator object.
+	 *                         have to be a string or PathLocator object.
 	 * @param   string  $key   Path key, useful when you want to remove a path.
 	 *
 	 * @return  PathCollection  Return this object to support chaining.
@@ -144,8 +144,8 @@ class PathCollection extends \ArrayObject
 	 *
 	 * @param  string  $key      The key of path you want to get.
 	 * @param  string  $default  If path not exists, return this default path.
-	 *                           Default value can be PathLocator object string or null.
-	 *                           String will auto wrapped by object, if is null, just return null.
+	 *						   Default value can be PathLocator object string or null.
+	 *						   String will auto wrapped by object, if is null, just return null.
 	 *
 	 * @return  PathLocator  The path which you want.
 	 *
@@ -199,8 +199,8 @@ class PathCollection extends \ArrayObject
 		
 		return $iterator;
 	}
-    
-    /**
+	
+	/**
 	 * Get all files and folders as an iterator.
 	 *
 	 * @param  boolean  $recursive  True to support recrusive.
@@ -222,13 +222,13 @@ class PathCollection extends \ArrayObject
 	 * Find one file from all paths.
 	 *
 	 * @param  mixed   $condition  Finding condition, that can be a string, a regex or a callback function.
-	 *                            Callback example:
-	 *                            <code>
-	 *                            function($current, $key, $iterator)
-	 *                            {
-	 *                                return @preg_match('^Foo', $current->getFilename())  && ! $iterator->isDot();
-	 *                            }
-	 *                            </code>
+	 *                             Callback example:
+	 *                             <code>
+	 *                             function($current, $key, $iterator)
+	 *                             {
+	 *                                 return @preg_match('^Foo', $current->getFilename())  && ! $iterator->isDot();
+	 *                             }
+	 *                             </code>
 	 * @param  boolean  $recursive  True to resursive.
 	 *
 	 * @return  \SplFileInfo  Finded file info object.
@@ -251,13 +251,13 @@ class PathCollection extends \ArrayObject
 	 * Find all files from paths.
 	 *
 	 * @param  mixed   $condition  Finding condition, that can be a string, a regex or a callback function.
-	 *                            Callback example:
-	 *                            <code>
-	 *                            function($current, $key, $iterator)
-	 *                            {
-	 *                                return @preg_match('^Foo', $current->getFilename())  && ! $iterator->isDot();
-	 *                            }
-	 *                            </code>
+	 *                             Callback example:
+	 *                             <code>
+	 *                             function($current, $key, $iterator)
+	 *                             {
+	 *                                 return @preg_match('^Foo', $current->getFilename())  && ! $iterator->isDot();
+	 *                             }
+	 *                             </code>
 	 * @param  boolean  $recursive  True to resursive.
 	 *
 	 * @return  \AppendIterator  Finded files or paths iterator.
@@ -301,8 +301,8 @@ class PathCollection extends \ArrayObject
 			return $path->getFolders($recursive);
 		});
 	}
-    
-    /**
+	
+	/**
 	 * Set prefix to all paths.
 	 *
 	 * @param  string  $prefix  The prefix path you want to prepend when path convert to string.
@@ -317,8 +317,8 @@ class PathCollection extends \ArrayObject
 		{
 			$path->setPrefix((string) $prefix);
 		}
-        
-        return $this;
+		
+		return $this;
 	}
 	
 	/**
@@ -354,8 +354,8 @@ class PathCollection extends \ArrayObject
 		
 		return $this;
 	}
-    
-    /**
+	
+	/**
 	 * Convert paths bag to array, and every path to string.
 	 *
 	 * @return  array  Raw paths.
