@@ -113,7 +113,8 @@ foreach($path->findAll(array('^config_*.json', '!^..'), true /* Rescrusive */) a
 Find by callback
 
 ``` php
-$callback = function($current, $key, $iterator){
+$callback = function($current, $key, $iterator)
+{
     return return @preg_match('^Foo', $current->getFilename())  && ! $iterator->isDot();
 };
 
@@ -162,7 +163,7 @@ The iterator will travel to every `PathLocator` in this collection object, and r
 ##### Add with no key
 
 ``` php
-new $paths = new PathColleciotn(array(
+$paths = new PathColleciotn(array(
     new PathLocator('templates/' . $template . '/html/' . $option),
     new PathLocator('components/' . $option . '/view/tmpl/'),
     'layouts/' . $option ,     // Auto convert to PathLocator 
@@ -172,7 +173,7 @@ new $paths = new PathColleciotn(array(
 ##### Add with key name
 
 ``` php
-new $paths = new PathColleciotn(array(
+$paths = new PathColleciotn(array(
     'Template'  => new PathLocator('templates/' . $template . '/html/' . $option),
     'Component' => new PathLocator('components/' . $option . '/view/tmpl/'),
     'Layout'    => new PathLocator('layouts/' . $option)
@@ -192,7 +193,6 @@ $paths->addPath(new PathLocator('Foo'), 'Foo'); // With key name
 ##### Add paths
 
 ``` php
-
 $paths->addPaths(array(new PathLocator('Bar'))); // Add by array
 ```
 
